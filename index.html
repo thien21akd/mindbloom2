@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LearnFlow — Quản lý học tập</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f5f4f0;
+  --surface:#ffffff;
+  --surface2:#faf9f7;
+  --border:#e8e5df;
+  --border2:#d4cfc6;
+  --text1:#1a1916;
+  --text2:#6b6760;
+  --text3:#a09c96;
+  --indigo:#5b50e8;
+  --indigo-light:#eeedf9;
+  --indigo-mid:#8880ef;
+  --teal:#0d9e74;
+  --teal-light:#e3f5ed;
+  --amber:#d97706;
+  --amber-light:#fef3e2;
+  --rose:#e04a4a;
+  --rose-light:#fdeaea;
+  --sky:#0284c7;
+  --sky-light:#e0f2fe;
+  --font:'Plus Jakarta Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+  --r:12px;
+  --r2:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow2:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text1);min-height:100vh;font-size:14px;line-height:1.5;}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:0;}
+.logo{padding:22px 20px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.logo-mark{width:34px;height:34px;background:var(--indigo);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;letter-spacing:-1px;flex-shrink:0;}
+.logo-name{font-size:17px;font-weight:700;color:var(--text1);letter-spacing:-.4px;}
+.logo-name span{color:var(--indigo);}
+
+.user-pill{margin:14px 14px 6px;border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:10px;background:var(--surface2);}
+.ava{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5b50e8,#8bc5f5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0;}
+.ava-info p{font-size:13px;font-weight:600;}
+.ava-info span{font-size:11px;color:var(--text3);}
+.xp{margin-left:auto;font-size:11px;font-family:var(--mono);background:var(--indigo-light);color:var(--indigo);border-radius:20px;padding:3px 8px;white-space:nowrap;font-weight:500;}
+
+nav{padding:10px 10px;flex:1;overflow-y:auto;}
+.nav-group{margin-bottom:20px;}
+.nav-group-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.1px;text-transform:uppercase;padding:0 8px 8px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r2);cursor:pointer;font-size:13.5px;font-weight:500;color:var(--text2);transition:all .15s;margin-bottom:1px;user-select:none;}
+.nav-item:hover{background:var(--bg);color:var(--text1);}
+.nav-item.active{background:var(--indigo-light);color:var(--indigo);font-weight:600;}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--indigo);color:#fff;border-radius:10px;font-size:10px;padding:1px 7px;font-family:var(--mono);}
+
+.sidebar-footer{padding:14px 14px 18px;border-top:1px solid var(--border);}
+.streak-card{background:linear-gradient(135deg,#fff7ed,#fef3e2);border:1px solid #fcd9a0;border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.streak-icon{font-size:24px;}
+.streak-info p:first-child{font-size:11px;color:#92400e;}
+.streak-val{font-size:22px;font-weight:700;color:#d97706;font-family:var(--mono);line-height:1;}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.topbar-left h1{font-size:18px;font-weight:700;letter-spacing:-.3px;}
+.topbar-left p{font-size:12px;color:var(--text3);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);padding:7px 14px;cursor:text;transition:border-color .15s;}
+.search:hover{border-color:var(--border2);}
+.search input{border:none;background:none;font-family:var(--font);font-size:13px;color:var(--text2);outline:none;width:180px;}
+.search input::placeholder{color:var(--text3);}
+.icon-btn{width:34px;height:34px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;position:relative;transition:all .15s;}
+.icon-btn:hover{background:var(--border);border-color:var(--border2);}
+.dot{position:absolute;top:7px;right:7px;width:6px;height:6px;background:var(--rose);border-radius:50%;border:1.5px solid var(--surface);}
+.btn-primary{background:var(--indigo);color:#fff;border:none;border-radius:var(--r2);padding:7px 16px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.btn-primary:hover{background:#4a40d4;transform:translateY(-1px);}
+.btn-primary:active{transform:translateY(0);}
+
+/* ── MAIN ── */
+.main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.content{padding:22px 28px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:18px;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.card-title{font-size:14px;font-weight:700;color:var(--text1);}
+.card-action{font-size:12px;color:var(--indigo);cursor:pointer;font-weight:600;transition:opacity .15s;}
+.card-action:hover{opacity:.7;}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;transition:all .2s;cursor:default;box-shadow:var(--shadow);}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--shadow2);border-color:var(--border2);}
+.stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.stat-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.stat-trend{font-size:11px;font-family:var(--mono);padding:2px 7px;border-radius:20px;font-weight:500;}
+.trend-up{background:var(--teal-light);color:var(--teal);}
+.trend-dn{background:var(--rose-light);color:var(--rose);}
+.stat-num{font-size:28px;font-weight:700;font-family:var(--mono);letter-spacing:-1px;line-height:1.1;}
+.stat-lbl{font-size:12px;color:var(--text3);margin-top:3px;font-weight:500;}
+.stat-prog{height:3px;background:var(--bg);border-radius:3px;margin-top:14px;overflow:hidden;}
+.stat-fill{height:100%;border-radius:3px;transition:width .8s ease;}
+
+/* ── LAYOUT ROWS ── */
+.row2{display:grid;grid-template-columns:1fr 320px;gap:16px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 280px;gap:16px;}
+
+/* ── COURSES ── */
+.course-row{display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:var(--r2);cursor:pointer;transition:background .15s;margin:-2px -10px 0;}
+.course-row:hover{background:var(--surface2);}
+.course-thumb{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.ci{flex:1;min-width:0;}
+.ci-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ci-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.ci-bar{height:4px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:7px;}
+.ci-fill{height:100%;border-radius:4px;}
+.ci-pct{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:4px;}
+.badge{font-size:10px;font-family:var(--mono);padding:3px 8px;border-radius:20px;white-space:nowrap;font-weight:500;}
+.b-live{background:var(--rose-light);color:var(--rose);}
+.b-new{background:var(--indigo-light);color:var(--indigo);}
+.b-done{background:var(--teal-light);color:var(--teal);}
+.b-sky{background:var(--sky-light);color:var(--sky);}
+
+/* ── SCHEDULE ── */
+.sched-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.sched-row:last-child{border-bottom:none;padding-bottom:0;}
+.sched-time{font-size:11px;font-family:var(--mono);color:var(--text3);width:44px;flex-shrink:0;text-align:right;}
+.sched-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sched-body{flex:1;}
+.sched-name{font-size:12.5px;font-weight:600;}
+.sched-meta{font-size:11px;color:var(--text3);margin-top:1px;}
+.now-tag{font-size:10px;background:var(--rose-light);color:var(--rose);border-radius:20px;padding:2px 8px;font-weight:600;}
+
+/* ── CHART ── */
+.chart-wrap{display:flex;align-items:flex-end;gap:6px;height:90px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.bar{width:100%;border-radius:4px 4px 0 0;cursor:pointer;transition:opacity .15s;}
+.bar:hover{opacity:.7;}
+.bar-label{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.chart-stats{display:flex;gap:18px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.cs{font-size:12px;color:var(--text3);}
+.cs b{color:var(--text1);font-weight:600;font-family:var(--mono);}
+
+/* ── ACHIEVEMENTS ── */
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.ach{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 8px;text-align:center;cursor:pointer;transition:all .15s;}
+.ach:hover{border-color:var(--border2);background:var(--surface);}
+.ach.locked{opacity:.4;}
+.ach-em{font-size:20px;margin-bottom:5px;}
+.ach-n{font-size:11px;font-weight:600;color:var(--text2);}
+.ach-p{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:1px;}
+
+/* ── LEADERBOARD ── */
+.lb-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
+.lb-row:last-child{border-bottom:none;}
+.lb-rank{width:20px;text-align:center;font-size:12px;font-family:var(--mono);color:var(--text3);flex-shrink:0;}
+.r-gold{color:#d97706;font-weight:700;}
+.r-silver{color:#6b7280;font-weight:600;}
+.r-bronze{color:#92400e;font-weight:600;}
+.lb-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.lb-inf{flex:1;}
+.lb-nm{font-size:12.5px;font-weight:600;}
+.lb-lv{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.me-tag{font-size:9px;background:var(--indigo-light);color:var(--indigo);border-radius:20px;padding:1px 6px;margin-left:5px;font-weight:600;}
+.lb-sc{font-size:12px;font-family:var(--mono);font-weight:600;color:var(--indigo);}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--surface);border-radius:16px;padding:28px;width:440px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:pop .2s ease;}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h2{font-size:17px;font-weight:700;margin-bottom:6px;}
+.modal p.sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
+.form-row{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.form-row label{font-size:12px;font-weight:600;color:var(--text2);}
+.form-row input,.form-row select,.form-row textarea{font-family:var(--font);font-size:13px;border:1px solid var(--border);border-radius:var(--r2);padding:8px 12px;outline:none;background:var(--bg);color:var(--text1);transition:border-color .15s;}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--indigo);}
+.form-row textarea{resize:vertical;min-height:72px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.btn-ghost{background:none;border:1px solid var(--border);border-radius:var(--r2);padding:7px 16px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s;}
+.btn-ghost:hover{background:var(--bg);border-color:var(--border2);}
+
+/* ── TIMER ── */
+.timer-ring{position:relative;width:110px;height:110px;margin:0 auto 16px;}
+.timer-ring svg{transform:rotate(-90deg);}
+.timer-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.timer-num{font-size:22px;font-weight:700;font-family:var(--mono);letter-spacing:-1px;}
+.timer-lbl{font-size:10px;color:var(--text3);}
+.timer-controls{display:flex;gap:8px;justify-content:center;}
+.tc-btn{background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);padding:6px 14px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .15s;}
+.tc-btn:hover{background:var(--border);}
+.tc-btn.active{background:var(--indigo);color:#fff;border-color:var(--indigo);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text1);color:#fff;border-radius:var(--r);padding:12px 18px;font-size:13px;font-weight:500;z-index:200;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;display:flex;align-items:center;gap:8px;max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-icon{font-size:16px;}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;background:var(--bg);border-radius:var(--r2);padding:3px;margin-bottom:16px;}
+.tab{flex:1;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;color:var(--text2);transition:all .15s;user-select:none;}
+.tab.active{background:var(--surface);color:var(--indigo);box-shadow:var(--shadow);}
+
+/* ── PROGRESS RING ── */
+.progress-rings{display:flex;gap:16px;justify-content:space-around;padding:4px 0;}
+.prog-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.prog-ring-wrap span{font-size:11px;color:var(--text2);font-weight:600;text-align:center;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">LF</div>
+    <div class="logo-name">Learn<span>Flow</span></div>
+  </div>
+
+  <div class="user-pill">
+    <div class="ava">MT</div>
+    <div class="ava-info">
+      <p>Minh Tuấn</p>
+      <span>Level 14 · Scholar</span>
+    </div>
+    <div class="xp">2,840 XP</div>
+  </div>
+
+  <nav>
+    <div class="nav-group">
+      <div class="nav-group-label">Tổng quan</div>
+      <div class="nav-item active" onclick="setPage('dashboard')"><span class="nav-icon">🏠</span>Dashboard</div>
+      <div class="nav-item" onclick="setPage('courses')"><span class="nav-icon">📚</span>Khóa học<span class="nav-badge">8</span></div>
+      <div class="nav-item" onclick="openModal('add-course')"><span class="nav-icon">➕</span>Thêm khóa học</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Học tập</div>
+      <div class="nav-item" onclick="setPage('tasks')"><span class="nav-icon">📝</span>Bài tập<span class="nav-badge">5</span></div>
+      <div class="nav-item" onclick="setPage('schedule')"><span class="nav-icon">📅</span>Lịch học</div>
+      <div class="nav-item" onclick="setPage('timer')"><span class="nav-icon">⏱️</span>Pomodoro Timer</div>
+      <div class="nav-item" onclick="setPage('notes')"><span class="nav-icon">📓</span>Ghi chú</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Cộng đồng</div>
+      <div class="nav-item" onclick="setPage('leaderboard')"><span class="nav-icon">🏆</span>Bảng xếp hạng</div>
+      <div class="nav-item" onclick="setPage('groups')"><span class="nav-icon">👥</span>Nhóm học</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">Cá nhân</div>
+      <div class="nav-item" onclick="setPage('progress')"><span class="nav-icon">📊</span>Tiến độ</div>
+      <div class="nav-item" onclick="setPage('settings')"><span class="nav-icon">⚙️</span>Cài đặt</div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="streak-card">
+      <div class="streak-icon">🔥</div>
+      <div class="streak-info">
+        <p>Streak hiện tại</p>
+        <div class="streak-val" id="streak-val">14</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 id="page-title">Chào buổi sáng, Minh Tuấn 👋</h1>
+      <p id="page-sub">Thứ Ba, 14 tháng 4 · Bạn có 3 bài học hôm nay</p>
+    </div>
+    <div class="topbar-right">
+      <div class="search">
+        <span style="font-size:13px;color:var(--text3)">🔍</span>
+        <input id="search-input" type="text" placeholder="Tìm kiếm khoá học..." oninput="handleSearch(this.value)"/>
+      </div>
+      <div class="icon-btn" onclick="openModal('add-task')" title="Thêm bài tập">📝</div>
+      <div class="icon-btn" onclick="openModal('notifs')" title="Thông báo">🔔<div class="dot"></div></div>
+      <button class="btn-primary" onclick="openModal('add-course')">+ Thêm khoá</button>
+    </div>
+  </header>
+
+  <!-- PAGE: DASHBOARD -->
+  <div class="content" id="page-dashboard">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-top">
+          <div class="stat-ico" style="background:var(--indigo-light)">📚</div>
+          <div class="stat-trend trend-up">↑ +2</div>
+        </div>
+        <div class="stat-num">8</div>
+        <div class="stat-lbl">Khoá học đang học</div>
+        <div class="stat-prog"><div class="stat-fill" style="width:72%;background:var(--indigo)"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-top">
+          <div class="stat-ico" style="background:var(--teal-light)">⏱️</div>
+          <div class="stat-trend trend-up">↑ +4.2h</div>
+        </div>
+        <div class="stat-num">47h</div>
+        <div class="stat-lbl">Giờ học tháng này</div>
+        <div class="stat-prog"><div class="stat-fill" style="width:58%;background:var(--teal)"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-top">
+          <div class="stat-ico" style="background:var(--amber-light)">✅</div>
+          <div class="stat-trend trend-up">↑ +12%</div>
+        </div>
+        <div class="stat-num">89%</div>
+        <div class="stat-lbl">Tỉ lệ hoàn thành</div>
+        <div class="stat-prog"><div class="stat-fill" style="width:89%;background:var(--amber)"></div></div>
+      </div>
+      <div class="stat">
+        <div class="stat-top">
+          <div class="stat-ico" style="background:var(--sky-light)">🏅</div>
+          <div class="stat-trend trend-up">↑ +3</div>
+        </div>
+        <div class="stat-num">24</div>
+        <div class="stat-lbl">Huy hiệu đạt được</div>
+        <div class="stat-prog"><div class="stat-fill" style="width:80%;background:var(--sky)"></div></div>
+      </div>
+    </div>
+
+    <!-- MID ROW -->
+    <div class="row2">
+      <!-- COURSES -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🎯 Khoá học đang học</div>
+          <div class="card-action" onclick="setPage('courses')">Xem tất cả →</div>
+        </div>
+        <div id="course-list">
+          <div class="course-row">
+            <div class="course-thumb" style="background:var(--indigo-light)">⚛️</div>
+            <div class="ci">
+              <div class="ci-name">React Advanced & Performance Patterns</div>
+              <div class="ci-sub">Nguyễn Văn A · 42 bài học</div>
+              <div class="ci-bar"><div class="ci-fill" style="width:68%;background:var(--indigo)"></div></div>
+              <div class="ci-pct">68% · Còn 14 bài</div>
+            </div>
+            <div class="badge b-live">🔴 Live</div>
+          </div>
+          <div class="course-row">
+            <div class="course-thumb" style="background:var(--teal-light)">🐍</div>
+            <div class="ci">
+              <div class="ci-name">Python cho Data Science & ML</div>
+              <div class="ci-sub">Trần Thị B · 60 bài học</div>
+              <div class="ci-bar"><div class="ci-fill" style="width:41%;background:var(--teal)"></div></div>
+              <div class="ci-pct">41% · Còn 35 bài</div>
+            </div>
+            <div class="badge b-new">✨ Mới</div>
+          </div>
+          <div class="course-row">
+            <div class="course-thumb" style="background:var(--amber-light)">🎨</div>
+            <div class="ci">
+              <div class="ci-name">UI/UX Design Masterclass 2025</div>
+              <div class="ci-sub">Lê Văn C · 38 bài học</div>
+              <div class="ci-bar"><div class="ci-fill" style="width:92%;background:var(--amber)"></div></div>
+              <div class="ci-pct">92% · Sắp hoàn thành!</div>
+            </div>
+            <div class="badge b-done">✅ Gần xong</div>
+          </div>
+          <div class="course-row">
+            <div class="course-thumb" style="background:var(--sky-light)">☁️</div>
+            <div class="ci">
+              <div class="ci-name">AWS Cloud Practitioner Essentials</div>
+              <div class="ci-sub">Phạm Thị D · 55 bài học</div>
+              <div class="ci-bar"><div class="ci-fill" style="width:23%;background:var(--sky)"></div></div>
+              <div class="ci-pct">23% · Mới bắt đầu</div>
+            </div>
+            <div class="badge b-sky">🆕 Mới</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCHEDULE -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📅 Lịch hôm nay</div>
+          <div class="card-action" onclick="openModal('add-schedule')">+ Thêm</div>
+        </div>
+        <div id="schedule-list">
+          <div class="sched-row">
+            <div class="sched-time">08:00</div>
+            <div class="sched-dot" style="background:var(--indigo)"></div>
+            <div class="sched-body">
+              <div class="sched-name">React Hooks nâng cao</div>
+              <div class="sched-meta">45 phút · Module 7</div>
+            </div>
+            <div class="now-tag">Bây giờ</div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-time">10:30</div>
+            <div class="sched-dot" style="background:var(--teal)"></div>
+            <div class="sched-body">
+              <div class="sched-name">Pandas & Visualization</div>
+              <div class="sched-meta">60 phút · Module 3</div>
+            </div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-time">14:00</div>
+            <div class="sched-dot" style="background:var(--amber)"></div>
+            <div class="sched-body">
+              <div class="sched-name">Live: UI/UX Review Session</div>
+              <div class="sched-meta">90 phút · Buổi cuối</div>
+            </div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-time">16:30</div>
+            <div class="sched-dot" style="background:var(--sky)"></div>
+            <div class="sched-body">
+              <div class="sched-name">AWS EC2 & S3 Basics</div>
+              <div class="sched-meta">50 phút · Module 2</div>
+            </div>
+          </div>
+          <div class="sched-row">
+            <div class="sched-time">20:00</div>
+            <div class="sched-dot" style="background:var(--rose)"></div>
+            <div class="sched-body">
+              <div class="sched-name">Ôn tập & Flashcard</div>
+              <div class="sched-meta">30 phút · Tự học</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="row3">
+      <!-- ACTIVITY -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📈 Hoạt động 7 ngày</div>
+          <div class="card-action">Xem chi tiết</div>
+        </div>
+        <div class="chart-wrap" id="activity-chart">
+          <div class="bar-col"><div class="bar" style="height:50px;background:#c7c4f5" title="T2: 50 phút"></div><div class="bar-label">T2</div></div>
+          <div class="bar-col"><div class="bar" style="height:68px;background:#aba6ef" title="T3: 68 phút"></div><div class="bar-label">T3</div></div>
+          <div class="bar-col"><div class="bar" style="height:40px;background:#c7c4f5" title="T4: 40 phút"></div><div class="bar-label">T4</div></div>
+          <div class="bar-col"><div class="bar" style="height:78px;background:#aba6ef" title="T5: 78 phút"></div><div class="bar-label">T5</div></div>
+          <div class="bar-col"><div class="bar" style="height:58px;background:#c7c4f5" title="T6: 58 phút"></div><div class="bar-label">T6</div></div>
+          <div class="bar-col"><div class="bar" style="height:32px;background:#c7c4f5" title="T7: 32 phút"></div><div class="bar-label">T7</div></div>
+          <div class="bar-col"><div class="bar" style="height:85px;background:var(--indigo)" title="CN: 85 phút"></div><div class="bar-label" style="color:var(--indigo);font-weight:600">CN</div></div>
+        </div>
+        <div class="chart-stats">
+          <div class="cs">Tổng: <b>6.8h</b></div>
+          <div class="cs">TB: <b>58 phút</b></div>
+          <div class="cs">Tốt nhất: <b style="color:var(--teal)">1.4h</b></div>
+        </div>
+      </div>
+
+      <!-- ACHIEVEMENTS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏆 Thành tích</div>
+          <div class="card-action">Xem kho →</div>
+        </div>
+        <div class="ach-grid">
+          <div class="ach" onclick="showToast('🔥 Streak 14 ngày — +500 XP!')">
+            <div class="ach-em">🔥</div>
+            <div class="ach-n">Streak 14</div>
+            <div class="ach-p">+500 XP</div>
+          </div>
+          <div class="ach" onclick="showToast('⚡ Tốc độ học — +300 XP!')">
+            <div class="ach-em">⚡</div>
+            <div class="ach-n">Tốc độ học</div>
+            <div class="ach-p">+300 XP</div>
+          </div>
+          <div class="ach" onclick="showToast('🎯 Hoàn hảo — +400 XP!')">
+            <div class="ach-em">🎯</div>
+            <div class="ach-n">Hoàn hảo</div>
+            <div class="ach-p">+400 XP</div>
+          </div>
+          <div class="ach" onclick="showToast('📖 Đọc sách — +200 XP!')">
+            <div class="ach-em">📖</div>
+            <div class="ach-n">Đọc 5 ngày</div>
+            <div class="ach-p">+200 XP</div>
+          </div>
+          <div class="ach locked">
+            <div class="ach-em">👑</div>
+            <div class="ach-n">Top 10</div>
+            <div class="ach-p">+1000 XP</div>
+          </div>
+          <div class="ach locked">
+            <div class="ach-em">💎</div>
+            <div class="ach-n">100h học</div>
+            <div class="ach-p">+2000 XP</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEADERBOARD -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🥇 Bảng xếp hạng</div>
+          <div class="card-action" onclick="setPage('leaderboard')">Xem tất cả</div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank r-gold">1</div>
+          <div class="lb-av" style="background:#fef3e2;color:#d97706">AH</div>
+          <div class="lb-inf"><div class="lb-nm">Anh Hoàng</div><div class="lb-lv">Lv.19</div></div>
+          <div class="lb-sc">5,240</div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank r-silver">2</div>
+          <div class="lb-av" style="background:var(--sky-light);color:var(--sky)">TL</div>
+          <div class="lb-inf"><div class="lb-nm">Thùy Linh</div><div class="lb-lv">Lv.17</div></div>
+          <div class="lb-sc">4,780</div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank r-bronze">3</div>
+          <div class="lb-av" style="background:var(--teal-light);color:var(--teal)">KD</div>
+          <div class="lb-inf"><div class="lb-nm">Khánh Duy</div><div class="lb-lv">Lv.16</div></div>
+          <div class="lb-sc">4,220</div>
+        </div>
+        <div class="lb-row" style="background:var(--indigo-light);border-radius:var(--r2);padding:9px 8px;margin:0 -4px;">
+          <div class="lb-rank" style="color:var(--indigo)">8</div>
+          <div class="lb-av" style="background:#ddd9ff;color:var(--indigo)">MT</div>
+          <div class="lb-inf"><div class="lb-nm">Minh Tuấn<span class="me-tag">Bạn</span></div><div class="lb-lv">Lv.14</div></div>
+          <div class="lb-sc">2,840</div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">9</div>
+          <div class="lb-av" style="background:var(--rose-light);color:var(--rose)">NT</div>
+          <div class="lb-inf"><div class="lb-nm">Ngọc Trinh</div><div class="lb-lv">Lv.13</div></div>
+          <div class="lb-sc">2,610</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: TIMER -->
+  <div class="content" id="page-timer" style="display:none;">
+    <div style="max-width:400px;margin:0 auto;width:100%;">
+      <div class="card" style="text-align:center;">
+        <div class="card-header" style="justify-content:center;"><div class="card-title" style="font-size:16px;">⏱️ Pomodoro Timer</div></div>
+        <div class="tabs" id="timer-tabs">
+          <div class="tab active" onclick="setTimerMode('focus',this)">🎯 Tập trung</div>
+          <div class="tab" onclick="setTimerMode('short',this)">☕ Nghỉ ngắn</div>
+          <div class="tab" onclick="setTimerMode('long',this)">😴 Nghỉ dài</div>
+        </div>
+        <div class="timer-ring">
+          <svg width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="48" fill="none" stroke="var(--border)" stroke-width="6"/>
+            <circle id="timer-circle" cx="55" cy="55" r="48" fill="none" stroke="var(--indigo)" stroke-width="6"
+              stroke-dasharray="301.6" stroke-dashoffset="0" stroke-linecap="round"/>
+          </svg>
+          <div class="timer-text">
+            <div class="timer-num" id="timer-display">25:00</div>
+            <div class="timer-lbl" id="timer-mode-lbl">Tập trung</div>
+          </div>
+        </div>
+        <div class="timer-controls">
+          <button class="tc-btn" onclick="resetTimer()">↺ Reset</button>
+          <button class="tc-btn active" id="timer-btn" onclick="toggleTimer()">▶ Bắt đầu</button>
+          <button class="tc-btn" onclick="skipTimer()">⏭ Bỏ qua</button>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-around;">
+          <div style="text-align:center;">
+            <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--indigo)" id="pomo-count">0</div>
+            <div style="font-size:11px;color:var(--text3);">Phiên hoàn thành</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--teal)" id="pomo-time">0h 0m</div>
+            <div style="font-size:11px;color:var(--text3);">Tổng thời gian</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: NOTES -->
+  <div class="content" id="page-notes" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📓 Ghi chú nhanh</div>
+        <button class="btn-primary" onclick="addNote()">+ Thêm ghi chú</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;" id="notes-grid">
+        <div class="note-card" style="background:#fef3e2;border:1px solid #fcd9a0;border-radius:var(--r);padding:14px;cursor:pointer;" onclick="editNote(this)">
+          <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px;">React Hooks</div>
+          <div style="font-size:12px;color:#78350f;line-height:1.6;">useState, useEffect, useCallback, useMemo — ghi nhớ thứ tự dependencies array.</div>
+          <div style="font-size:10px;color:#a16207;margin-top:10px;font-family:var(--mono);">12/04/2026</div>
+        </div>
+        <div class="note-card" style="background:#e0f2fe;border:1px solid #bae6fd;border-radius:var(--r);padding:14px;cursor:pointer;" onclick="editNote(this)">
+          <div style="font-size:12px;font-weight:700;color:#075985;margin-bottom:6px;">AWS EC2</div>
+          <div style="font-size:12px;color:#0c4a6e;line-height:1.6;">Instance types: t2.micro free tier. Security groups = virtual firewall. AMI = template.</div>
+          <div style="font-size:10px;color:#0369a1;margin-top:10px;font-family:var(--mono);">10/04/2026</div>
+        </div>
+        <div class="note-card" style="background:var(--teal-light);border:1px solid #6ee7b7;border-radius:var(--r);padding:14px;cursor:pointer;" onclick="editNote(this)">
+          <div style="font-size:12px;font-weight:700;color:#065f46;margin-bottom:6px;">Python Pandas</div>
+          <div style="font-size:12px;color:#064e3b;line-height:1.6;">df.groupby().agg() — mạnh hơn df.pivot_table(). Dùng .loc[] cho label, .iloc[] cho index.</div>
+          <div style="font-size:10px;color:#047857;margin-top:10px;font-family:var(--mono);">08/04/2026</div>
+        </div>
+        <div style="border:2px dashed var(--border2);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;min-height:100px;color:var(--text3);gap:6px;transition:all .15s;" onclick="addNote()" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:24px;">+</span>
+          <span style="font-size:12px;font-weight:600;">Thêm ghi chú</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: TASKS -->
+  <div class="content" id="page-tasks" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📝 Bài tập cần làm</div>
+        <button class="btn-primary" onclick="openModal('add-task')">+ Thêm bài tập</button>
+      </div>
+      <div id="tasks-list">
+        <div class="task-row" style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);">
+          <input type="checkbox" onchange="toggleTask(this)" style="width:16px;height:16px;cursor:pointer;accent-color:var(--indigo);">
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;">Bài tập React: Xây dựng Todo App</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">React Advanced · Hạn: 15/04/2026</div>
+          </div>
+          <div class="badge b-live">Gấp</div>
+        </div>
+        <div class="task-row" style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);">
+          <input type="checkbox" onchange="toggleTask(this)" style="width:16px;height:16px;cursor:pointer;accent-color:var(--indigo);">
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;">Quiz: Machine Learning Basics</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">Python ML · Hạn: 18/04/2026</div>
+          </div>
+          <div class="badge b-new">Quiz</div>
+        </div>
+        <div class="task-row" style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);">
+          <input type="checkbox" onchange="toggleTask(this)" style="width:16px;height:16px;cursor:pointer;accent-color:var(--indigo);">
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;">Thiết kế prototype ứng dụng mobile</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">UI/UX Masterclass · Hạn: 20/04/2026</div>
+          </div>
+          <div class="badge b-done">Figma</div>
+        </div>
+        <div class="task-row" style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);">
+          <input type="checkbox" checked onchange="toggleTask(this)" style="width:16px;height:16px;cursor:pointer;accent-color:var(--indigo);">
+          <div style="flex:1;opacity:.5;">
+            <div style="font-size:13px;font-weight:600;text-decoration:line-through;">Đọc tài liệu AWS IAM</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">AWS · Đã xong</div>
+          </div>
+          <div class="badge b-done">✓ Xong</div>
+        </div>
+        <div class="task-row" style="display:flex;align-items:center;gap:12px;padding:11px 0;">
+          <input type="checkbox" checked onchange="toggleTask(this)" style="width:16px;height:16px;cursor:pointer;accent-color:var(--indigo);">
+          <div style="flex:1;opacity:.5;">
+            <div style="font-size:13px;font-weight:600;text-decoration:line-through;">Xem video CSS Grid layout</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">UI/UX · Đã xong</div>
+          </div>
+          <div class="badge b-done">✓ Xong</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;">
+        <div style="flex:1;background:var(--bg);border-radius:20px;height:6px;overflow:hidden;">
+          <div id="task-progress" style="height:100%;background:var(--indigo);border-radius:20px;width:40%;transition:width .4s;"></div>
+        </div>
+        <div style="font-size:12px;color:var(--text3);font-family:var(--mono);" id="task-count">2 / 5 hoàn thành</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: PROGRESS -->
+  <div class="content" id="page-progress" style="display:none;">
+    <div class="row2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">📊 Tiến độ các khoá học</div></div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;font-weight:600;">⚛️ React Advanced</span><span style="font-size:12px;font-family:var(--mono);color:var(--indigo)">68%</span></div>
+            <div style="height:8px;background:var(--bg);border-radius:8px;overflow:hidden;"><div style="width:68%;height:100%;background:var(--indigo);border-radius:8px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;font-weight:600;">🐍 Python ML</span><span style="font-size:12px;font-family:var(--mono);color:var(--teal)">41%</span></div>
+            <div style="height:8px;background:var(--bg);border-radius:8px;overflow:hidden;"><div style="width:41%;height:100%;background:var(--teal);border-radius:8px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;font-weight:600;">🎨 UI/UX Design</span><span style="font-size:12px;font-family:var(--mono);color:var(--amber)">92%</span></div>
+            <div style="height:8px;background:var(--bg);border-radius:8px;overflow:hidden;"><div style="width:92%;height:100%;background:var(--amber);border-radius:8px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:13px;font-weight:600;">☁️ AWS Cloud</span><span style="font-size:12px;font-family:var(--mono);color:var(--sky)">23%</span></div>
+            <div style="height:8px;background:var(--bg);border-radius:8px;overflow:hidden;"><div style="width:23%;height:100%;background:var(--sky);border-radius:8px;"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">🎯 Mục tiêu tuần này</div></div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--indigo-light);border-radius:var(--r2);">
+            <span style="font-size:13px;font-weight:600;color:var(--indigo)">⏱️ Học 10h / tuần</span>
+            <span style="font-size:12px;font-family:var(--mono);color:var(--indigo)">6.8h / 10h</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--teal-light);border-radius:var(--r2);">
+            <span style="font-size:13px;font-weight:600;color:var(--teal)">📚 Hoàn thành 3 bài học</span>
+            <span style="font-size:12px;font-family:var(--mono);color:var(--teal)">2 / 3</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--amber-light);border-radius:var(--r2);">
+            <span style="font-size:13px;font-weight:600;color:var(--amber)">✅ Nộp 2 bài tập</span>
+            <span style="font-size:12px;font-family:var(--mono);color:var(--amber)">1 / 2</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--rose-light);border-radius:var(--r2);">
+            <span style="font-size:13px;font-weight:600;color:var(--rose)">🔥 Duy trì streak 14+ ngày</span>
+            <span style="font-size:12px;font-family:var(--mono);color:var(--teal)">✓ Đạt!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- ── MODALS ── -->
+<!-- Add Course -->
+<div class="modal-bg" id="modal-add-course" onclick="closeModalBg(event,'modal-add-course')">
+  <div class="modal">
+    <h2>📚 Thêm khoá học mới</h2>
+    <p class="sub">Điền thông tin khoá học bạn muốn theo dõi</p>
+    <div class="form-row"><label>Tên khoá học</label><input type="text" id="new-course-name" placeholder="VD: JavaScript ES2025"/></div>
+    <div class="form-row"><label>Giảng viên</label><input type="text" id="new-course-teacher" placeholder="VD: Nguyễn Văn A"/></div>
+    <div class="form-row"><label>Tổng số bài học</label><input type="number" id="new-course-total" placeholder="VD: 40" min="1"/></div>
+    <div class="form-row"><label>Danh mục</label>
+      <select id="new-course-cat">
+        <option>Frontend</option><option>Backend</option><option>Data Science</option><option>Design</option><option>DevOps</option><option>Khác</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-add-course')">Huỷ</button>
+      <button class="btn-primary" onclick="addCourse()">✓ Thêm khoá học</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Task -->
+<div class="modal-bg" id="modal-add-task" onclick="closeModalBg(event,'modal-add-task')">
+  <div class="modal">
+    <h2>📝 Thêm bài tập mới</h2>
+    <p class="sub">Thêm nhiệm vụ học tập cần hoàn thành</p>
+    <div class="form-row"><label>Tên bài tập</label><input type="text" id="new-task-name" placeholder="VD: Làm bài tập React..."/></div>
+    <div class="form-row"><label>Khoá học liên quan</label>
+      <select id="new-task-course">
+        <option>React Advanced</option><option>Python ML</option><option>UI/UX Design</option><option>AWS Cloud</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Hạn nộp</label><input type="date" id="new-task-date"/></div>
+    <div class="form-row"><label>Ghi chú</label><textarea id="new-task-note" placeholder="Ghi chú thêm..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-add-task')">Huỷ</button>
+      <button class="btn-primary" onclick="addTask()">✓ Thêm bài tập</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Schedule -->
+<div class="modal-bg" id="modal-add-schedule" onclick="closeModalBg(event,'modal-add-schedule')">
+  <div class="modal">
+    <h2>📅 Thêm lịch học</h2>
+    <p class="sub">Lên lịch cho buổi học sắp tới</p>
+    <div class="form-row"><label>Tên buổi học</label><input type="text" id="new-sched-name" placeholder="VD: Học React Hooks..."/></div>
+    <div class="form-row"><label>Thời gian</label><input type="time" id="new-sched-time"/></div>
+    <div class="form-row"><label>Thời lượng (phút)</label><input type="number" id="new-sched-dur" placeholder="45" min="5"/></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-add-schedule')">Huỷ</button>
+      <button class="btn-primary" onclick="addSchedule()">✓ Thêm lịch</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notifs -->
+<div class="modal-bg" id="modal-notifs" onclick="closeModalBg(event,'modal-notifs')">
+  <div class="modal">
+    <h2>🔔 Thông báo</h2>
+    <p class="sub">Cập nhật mới nhất dành cho bạn</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+      <div style="display:flex;gap:10px;padding:10px;background:var(--indigo-light);border-radius:var(--r2);">
+        <span style="font-size:16px;">🎉</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--indigo)">Streak 14 ngày!</div><div style="font-size:11px;color:var(--text2);margin-top:2px;">Bạn đã học liên tục 14 ngày. Tuyệt vời!</div></div>
+      </div>
+      <div style="display:flex;gap:10px;padding:10px;background:var(--teal-light);border-radius:var(--r2);">
+        <span style="font-size:16px;">📚</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--teal)">Khoá học mới khả dụng</div><div style="font-size:11px;color:var(--text2);margin-top:2px;">TypeScript Full Course 2025 vừa được thêm vào.</div></div>
+      </div>
+      <div style="display:flex;gap:10px;padding:10px;background:var(--rose-light);border-radius:var(--r2);">
+        <span style="font-size:16px;">⚠️</span>
+        <div><div style="font-size:13px;font-weight:600;color:var(--rose)">Bài tập sắp đến hạn</div><div style="font-size:11px;color:var(--text2);margin-top:2px;">React Todo App hạn nộp ngày mai, 15/04.</div></div>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn-primary" onclick="closeModal('modal-notifs')">Đã đọc tất cả</button></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><span class="toast-icon" id="toast-icon">✓</span><span id="toast-msg"></span></div>
+
+<script>
+// ── PAGE NAVIGATION ──
+const pages = ['dashboard','timer','notes','tasks','progress'];
+function setPage(id){
+  pages.forEach(p=>{
+    const el=document.getElementById('page-'+p);
+    if(el) el.style.display = p===id ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  event && event.currentTarget && event.currentTarget.classList.add('active');
+  const titles={
+    dashboard:'Chào buổi sáng, Minh Tuấn 👋',
+    timer:'⏱️ Pomodoro Timer',
+    notes:'📓 Ghi chú của tôi',
+    tasks:'📝 Bài tập & Nhiệm vụ',
+    progress:'📊 Tiến độ học tập',
+    courses:'📚 Tất cả khoá học',
+    leaderboard:'🏆 Bảng xếp hạng',
+    groups:'👥 Nhóm học',
+    schedule:'📅 Lịch học',
+    settings:'⚙️ Cài đặt'
+  };
+  document.getElementById('page-title').textContent = titles[id]||'Dashboard';
+  document.getElementById('page-sub').textContent = 'Thứ Ba, 14 tháng 4 · LearnFlow';
+}
+
+// ── MODAL ──
+function openModal(id){
+  document.getElementById('modal-'+id).classList.add('open');
+}
+function closeModal(id){
+  document.getElementById('modal-'+id).classList.remove('open');
+}
+function closeModalBg(e,id){
+  if(e.target===e.currentTarget) closeModal(id);
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg,icon='✓'){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  document.getElementById('toast-icon').textContent=icon;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── ADD COURSE ──
+const emojiMap={'Frontend':'⚛️','Backend':'🔧','Data Science':'🐍','Design':'🎨','DevOps':'☁️','Khác':'📘'};
+const colorMap={'Frontend':'var(--indigo-light)','Backend':'var(--sky-light)','Data Science':'var(--teal-light)','Design':'var(--amber-light)','DevOps':'var(--rose-light)','Khác':'var(--border)'};
+const fillMap={'Frontend':'var(--indigo)','Backend':'var(--sky)','Data Science':'var(--teal)','Design':'var(--amber)','DevOps':'var(--rose)','Khác':'var(--text3)'};
+const badgeMap={'Frontend':'b-new','Backend':'b-sky','Data Science':'b-done','Design':'b-done','DevOps':'b-sky','Khác':'b-new'};
+function addCourse(){
+  const name=document.getElementById('new-course-name').value.trim();
+  const teacher=document.getElementById('new-course-teacher').value.trim();
+  const total=document.getElementById('new-course-total').value||'?';
+  const cat=document.getElementById('new-course-cat').value;
+  if(!name){showToast('Vui lòng nhập tên khoá học!','⚠️');return;}
+  const div=document.createElement('div');
+  div.className='course-row';
+  div.innerHTML=`<div class="course-thumb" style="background:${colorMap[cat]}">${emojiMap[cat]}</div>
+  <div class="ci">
+    <div class="ci-name">${name}</div>
+    <div class="ci-sub">${teacher||'Chưa rõ'} · ${total} bài học</div>
+    <div class="ci-bar"><div class="ci-fill" style="width:0%;background:${fillMap[cat]}"></div></div>
+    <div class="ci-pct">0% · Mới bắt đầu</div>
+  </div>
+  <div class="badge ${badgeMap[cat]}">🆕 Mới</div>`;
+  document.getElementById('course-list').appendChild(div);
+  closeModal('modal-add-course');
+  document.getElementById('new-course-name').value='';
+  document.getElementById('new-course-teacher').value='';
+  document.getElementById('new-course-total').value='';
+  showToast(`Đã thêm khoá học: ${name}`,'📚');
+}
+
+// ── ADD TASK ──
+let taskDone=2,taskTotal=5;
+function addTask(){
+  const name=document.getElementById('new-task-name').value.trim();
+  const course=document.getElementById('new-task-course').value;
+  const date=document.getElementById('new-task-date').value;
+  if(!name){showToast('Vui lòng nhập tên bài tập!','⚠️');return;}
+  const fmtDate=date?new Date(date).toLocaleDateString('vi-VN'):'Chưa có hạn';
+  const row=document.createElement('div');
+  row.className='task-row';
+  row.style.cssText='display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);';
+  row.innerHTML=`<input type="checkbox" onchange="toggleTask(this)" style="width:16px;height:16px;cursor:pointer;accent-color:var(--indigo);">
+  <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${name}</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${course} · Hạn: ${fmtDate}</div></div>
+  <div class="badge b-new">Mới</div>`;
+  document.getElementById('tasks-list').appendChild(row);
+  taskTotal++;
+  updateTaskProgress();
+  closeModal('modal-add-task');
+  document.getElementById('new-task-name').value='';
+  document.getElementById('new-task-note').value='';
+  showToast(`Đã thêm: ${name}`,'✅');
+}
+function toggleTask(cb){
+  const row=cb.closest('.task-row');
+  const info=row.querySelector('div[style*="flex:1"]')||row.querySelector('div[style*="flex: 1"]');
+  if(cb.checked){
+    taskDone++;
+    if(info){info.style.opacity='.5';}
+    const nameEl=row.querySelector('[style*="font-weight:600"],[style*="font-weight: 600"]');
+    if(nameEl) nameEl.style.textDecoration='line-through';
+  } else {
+    taskDone=Math.max(0,taskDone-1);
+    if(info){info.style.opacity='1';}
+    const nameEl=row.querySelector('[style*="text-decoration"]');
+    if(nameEl) nameEl.style.textDecoration='none';
+  }
+  updateTaskProgress();
+}
+function updateTaskProgress(){
+  const pct=taskTotal>0?Math.round(taskDone/taskTotal*100):0;
+  document.getElementById('task-progress').style.width=pct+'%';
+  document.getElementById('task-count').textContent=`${taskDone} / ${taskTotal} hoàn thành`;
+}
+
+// ── ADD SCHEDULE ──
+function addSchedule(){
+  const name=document.getElementById('new-sched-name').value.trim();
+  const time=document.getElementById('new-sched-time').value;
+  const dur=document.getElementById('new-sched-dur').value||'?';
+  if(!name){showToast('Vui lòng nhập tên buổi học!','⚠️');return;}
+  const row=document.createElement('div');
+  row.className='sched-row';
+  row.innerHTML=`<div class="sched-time">${time||'--:--'}</div>
+  <div class="sched-dot" style="background:var(--indigo)"></div>
+  <div class="sched-body"><div class="sched-name">${name}</div><div class="sched-meta">${dur} phút</div></div>`;
+  document.getElementById('schedule-list').appendChild(row);
+  closeModal('modal-add-schedule');
+  document.getElementById('new-sched-name').value='';
+  document.getElementById('new-sched-time').value='';
+  document.getElementById('new-sched-dur').value='';
+  showToast(`Đã thêm lịch: ${name}`,'📅');
+}
+
+// ── ADD NOTE ──
+const noteColors=[
+  {bg:'#fef3e2',border:'#fcd9a0',title:'#92400e',body:'#78350f',date:'#a16207'},
+  {bg:'#e0f2fe',border:'#bae6fd',title:'#075985',body:'#0c4a6e',date:'#0369a1'},
+  {bg:'#e3f5ed',border:'#6ee7b7',title:'#065f46',body:'#064e3b',date:'#047857'},
+  {bg:'#eeedf9',border:'#c4bff5',title:'#3c3489',body:'#26215c',date:'#534ab7'},
+  {bg:'#fdeaea',border:'#fca5a5',title:'#7f1d1d',body:'#450a0a',date:'#b91c1c'},
+];
+let noteColorIdx=0;
+function addNote(){
+  const title=prompt('Tiêu đề ghi chú:');
+  if(!title) return;
+  const content=prompt('Nội dung:');
+  const c=noteColors[noteColorIdx%noteColors.length];
+  noteColorIdx++;
+  const today=new Date().toLocaleDateString('vi-VN');
+  const grid=document.getElementById('notes-grid');
+  const addBtn=grid.lastElementChild;
+  const div=document.createElement('div');
+  div.className='note-card';
+  div.style.cssText=`background:${c.bg};border:1px solid ${c.border};border-radius:var(--r);padding:14px;cursor:pointer;`;
+  div.onclick=function(){editNote(this);};
+  div.innerHTML=`<div style="font-size:12px;font-weight:700;color:${c.title};margin-bottom:6px;">${title}</div>
+  <div style="font-size:12px;color:${c.body};line-height:1.6;">${content||'...'}</div>
+  <div style="font-size:10px;color:${c.date};margin-top:10px;font-family:var(--mono);">${today}</div>`;
+  grid.insertBefore(div,addBtn);
+  showToast(`Đã thêm ghi chú: ${title}`,'📓');
+}
+function editNote(el){
+  const titleEl=el.querySelector('div:first-child');
+  const bodyEl=el.querySelector('div:nth-child(2)');
+  const newTitle=prompt('Sửa tiêu đề:',titleEl.textContent);
+  if(newTitle===null) return;
+  const newBody=prompt('Sửa nội dung:',bodyEl.textContent);
+  if(newTitle) titleEl.textContent=newTitle;
+  if(newBody!==null) bodyEl.textContent=newBody;
+  showToast('Đã cập nhật ghi chú','✏️');
+}
+
+// ── SEARCH ──
+function handleSearch(val){
+  const rows=document.querySelectorAll('#course-list .course-row');
+  rows.forEach(row=>{
+    const name=row.querySelector('.ci-name').textContent.toLowerCase();
+    row.style.display=name.includes(val.toLowerCase())?'flex':'none';
+  });
+}
+
+// ── POMODORO TIMER ──
+let timerInterval=null,timerRunning=false;
+let timerTotal=25*60,timerRemaining=25*60,pomoCount=0,pomoTotalSec=0;
+const timerModes={focus:25*60,short:5*60,long:15*60};
+const modeLabels={focus:'Tập trung',short:'Nghỉ ngắn',long:'Nghỉ dài'};
+const modeColors={focus:'var(--indigo)',short:'var(--teal)',long:'var(--sky)'};
+let currentMode='focus';
+
+function setTimerMode(mode,tabEl){
+  document.querySelectorAll('#timer-tabs .tab').forEach(t=>t.classList.remove('active'));
+  tabEl.classList.add('active');
+  currentMode=mode;
+  timerTotal=timerModes[mode];
+  timerRemaining=timerTotal;
+  timerRunning=false;
+  clearInterval(timerInterval);
+  document.getElementById('timer-btn').textContent='▶ Bắt đầu';
+  document.getElementById('timer-btn').classList.add('active');
+  document.getElementById('timer-mode-lbl').textContent=modeLabels[mode];
+  document.getElementById('timer-circle').style.stroke=modeColors[mode];
+  renderTimer();
+}
+function renderTimer(){
+  const m=Math.floor(timerRemaining/60),s=timerRemaining%60;
+  document.getElementById('timer-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const circ=301.6;
+  const offset=circ*(1-timerRemaining/timerTotal);
+  document.getElementById('timer-circle').style.strokeDashoffset=offset;
+}
+function toggleTimer(){
+  if(timerRunning){
+    clearInterval(timerInterval);
+    timerRunning=false;
+    document.getElementById('timer-btn').textContent='▶ Tiếp tục';
+  } else {
+    timerRunning=true;
+    document.getElementById('timer-btn').textContent='⏸ Dừng';
+    timerInterval=setInterval(()=>{
+      if(timerRemaining<=0){
+        clearInterval(timerInterval);
+        timerRunning=false;
+        if(currentMode==='focus'){
+          pomoCount++;
+          pomoTotalSec+=timerTotal;
+          document.getElementById('pomo-count').textContent=pomoCount;
+          const h=Math.floor(pomoTotalSec/3600),mn=Math.floor((pomoTotalSec%3600)/60);
+          document.getElementById('pomo-time').textContent=`${h}h ${mn}m`;
+          showToast(`🎉 Hoàn thành phiên số ${pomoCount}! Nghỉ ngơi nào.`,'🎯');
+        } else {
+          showToast('Hết giờ nghỉ! Sẵn sàng học tiếp chưa?','⏰');
+        }
+        document.getElementById('timer-btn').textContent='▶ Bắt đầu';
+        return;
+      }
+      timerRemaining--;
+      renderTimer();
+    },1000);
+  }
+}
+function resetTimer(){
+  clearInterval(timerInterval);
+  timerRunning=false;
+  timerRemaining=timerTotal;
+  document.getElementById('timer-btn').textContent='▶ Bắt đầu';
+  renderTimer();
+}
+function skipTimer(){
+  clearInterval(timerInterval);
+  timerRunning=false;
+  timerRemaining=0;
+  renderTimer();
+  showToast('Đã bỏ qua phiên này','⏭');
+  document.getElementById('timer-btn').textContent='▶ Bắt đầu';
+}
+
+// ── STREAK REALTIME ──
+const streakVal=parseInt(localStorage.getItem('lf_streak')||'14');
+document.getElementById('streak-val').textContent=streakVal;
+</script>
+</body>
+</html>
